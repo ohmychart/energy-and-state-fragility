@@ -6,7 +6,7 @@
 
 <header>
 	<!-- <div class="cover" style="background-image: url({srcCover});" /> -->
-	<img src={srcCover} alt="" />
+	<img src={srcCover} alt="Header cover" />
 	<div class="title-container">
 		<h1 class="title">Energy Resources & State Fragility</h1>
 	</div>
@@ -29,7 +29,7 @@
 	header {
 		max-width: 1200px;
 		line-height: 0;
-		margin: 0 auto;
+		margin: 0 auto 9rem auto;
 	}
 
 	img {
