@@ -5,8 +5,10 @@
 
 	export let data;
 	export let title = '';
-	export let width = 1125;
-	export let height = 450;
+	export let xAxisTitle = ['Share of world', 'reserves'];
+
+	let width = 1200;
+	$: height = width / 2.5;
 
 	const LABELS = ['ALERT', 'WARNING', 'STABLE', 'SUSTAINABLE'];
 
@@ -26,16 +28,16 @@
 
 	const margin = {
 		top: 24,
-		bottom: 24 * 3,
+		bottom: 24 * 2,
 		left: 24 * 5,
 		right: 0
 	};
 
-	const w = width - margin.left - margin.right;
-	const h = height - margin.top - margin.bottom;
+	$: w = width - margin.left - margin.right;
+	$: h = height - margin.top - margin.bottom;
 
-	const scaleX = scaleLinear().range([0, w]).domain([0, 0.55]).nice();
-	const scaleY = scaleBand().range([0, h]).domain(LABELS).padding(0.1);
+	$: scaleX = scaleLinear().range([0, w]).domain([0, 0.55]).nice();
+	$: scaleY = scaleBand().range([0, h]).domain(LABELS).padding(0.1);
 
 	const scaleColor = scaleOrdinal()
 		.range(COLORS.reverse())
@@ -74,22 +76,26 @@
 		.value((d, key) => d[key]?.share ?? 0)
 		.order(stackOrderAscending)(chartData);
 
-	const ticksX = scaleX.ticks(5).map((tick) => {
+	$: ticksX = scaleX.ticks(5).map((tick) => {
 		return {
 			label: `${(tick * 100).toFixed(0)}%`,
 			pos: scaleX(tick)
 		};
 	});
 
-	const ticksY = LABELS.map((label) => {
+	$: ticksY = LABELS.map((label) => {
 		return {
 			label: label,
 			pos: scaleY(label) + scaleY.bandwidth() * 0.5
 		};
 	});
+
+	$: xAxisTitleMargin = width > 800 ? margin.bottom : margin.bottom * 0.8;
+	$: xAxisTitleGap = width > 800 ? 18 : 18 * 0.8;
+
 </script>
 
-<div class="chart-container">
+<div class="chart-container" bind:clientWidth={width}>
 	<div class="title-container">
 		<h2 class="title">{title}</h2>
 	</div>
@@ -114,12 +120,20 @@
 		<g class="axis-y" transform="translate({margin.left}, {margin.top})">
 			{#each ticksY as tick}
 				<g class="tick" transform="translate(0, {tick.pos})">
-					<text x="0" y="0" class="tick-y">{tick.label}</text>
+					<text x="0" y="0" class="tick-y" alignment-baseline="middle">{tick.label}</text>
 				</g>
 			{/each}
 		</g>
 
-		<g class="axis-x" transform="translate({margin.left}, {margin.top + h})">
+		<g class="axis-x" transform="translate({margin.left}, {margin.top + h + 8})">
+			<g class="axis-title" transform="translate({scaleX(0.5)}, {-xAxisTitleMargin})">
+				<text id='xAxisTitleText'>
+					{#each xAxisTitle as title}
+						<tspan x="0" dy="{xAxisTitleGap}">{title}</tspan>
+					{/each}
+				</text>
+			</g>
+
 			<line x1="0" y1="0" x2={ticksX.slice(-1)[0].pos} y2="0" class="axis-domain" />
 			{#each ticksX as tick}
 				<g class="tick" transform="translate({tick.pos}, 0)">
@@ -135,6 +149,12 @@
 	.chart-container {
 		max-width: 1200px;
 		margin: 0 auto 9rem auto;
+	}
+
+	@media (max-width: 1250px) {
+		.chart-container {
+			margin: 0 1rem 9rem 1rem;
+		}
 	}
 
 	.title-container {
@@ -168,7 +188,7 @@
 		font-size: 14px;
 		font-weight: 600;
 		text-anchor: end;
-		transform: translate(-12px, 4px);
+		transform: translateX(-12px);
 	}
 
 	.tick-x {
@@ -183,9 +203,31 @@
 		stroke-width: 2px;
 	}
 
+	.axis-title text {
+		font-size: 14px;
+		font-weight: 400;
+		fill: var(--color-secondary);
+		text-transform: uppercase;
+		text-anchor: end;
+	}
+
 	rect {
 		fill: grey;
 		stroke: var(--color-primary-dark);
 		stroke-width: 1px;
+	}
+
+	@media (max-width: 800px) {
+		.tick-y {
+			font-size: 12px;
+		}
+
+		.tick-x {
+			font-size: 12px;
+		}
+
+		.axis-title text {
+			font-size: 12px;
+		}
 	}
 </style>

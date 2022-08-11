@@ -12,16 +12,16 @@
 	</div>
 	<div class="intro">
 		<p>
-			Almost <strong>half of the world's proven fossil energy reserves</strong> like oil and gas is held by countries
-			classified in the <strong>warning</strong> category of the Fragile State Index, which measures a state’s
-			vulnerability to collapse or conflict.
+			Almost <strong>half of the world's proven fossil energy reserves</strong> like oil and gas is
+			held by countries classified in the <strong>warning</strong> category of the Fragile State Index,
+			which measures a state’s vulnerability to collapse or conflict.
 		</p>
 
-        <ul class="sources">
-            Sources:
-            <li>Fragile States Index by Fund For Peace 2022</li>
-            <li>BP Statistical Review of World Energy 2021</li>
-        </ul>
+		<ul class="sources">
+			Sources:
+			<li>Fragile States Index by Fund For Peace 2022</li>
+			<li>BP Statistical Review of World Energy 2021</li>
+		</ul>
 	</div>
 </header>
 
@@ -46,7 +46,7 @@
 		box-shadow: 12px 12px 0px 0px var(--color-accent);
 		width: 65%;
 		margin: 0 auto;
-        margin-bottom: 9rem;
+		margin-bottom: 9rem;
 	}
 
 	.title {
@@ -57,18 +57,24 @@
 	}
 
 	.intro {
-        line-height: 1.75;
-        max-width: 600px;
-        margin: 0 auto;
+		line-height: 1.75;
+		max-width: 600px;
+		margin: 0 auto;
 	}
 
-    .intro p {
-        margin-bottom: 3rem;
-    }
+	@media (max-width: 650px) {
+		.intro {
+			margin: 0 1rem;
+		}
+	}
 
-    .sources {
-        font-size: 1.6rem;
-        line-height: 1.5;
-        list-style: none;
-    }
+	.intro p {
+		margin-bottom: 3rem;
+	}
+
+	.sources {
+		font-size: 1.6rem;
+		line-height: 1.5;
+		list-style: none;
+	}
 </style>

@@ -1,6 +1,7 @@
 <script>
 	import Header from '$components/Header.svelte';
 	import Chart from '$components/Chart.svelte';
+	import Footer from '$components/Footer.svelte';
 
 	import dataset from '$data/dataset.json';
 
@@ -19,5 +20,5 @@
 
 <Header />
 <Chart data={dataOil} title = {`Oil Reserves \n& Fragile State Index`}/>
-
 <Chart data={dataGas} title = {`Natural Gas Reserves \n& Fragile State Index`}/>
+<Footer />
