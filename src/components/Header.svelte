@@ -17,11 +17,7 @@
 			which measures a state’s vulnerability to collapse or conflict.
 		</p>
 
-		<ul class="sources">
-			Sources:
-			<li>Fragile States Index by Fund For Peace 2022</li>
-			<li>BP Statistical Review of World Energy 2021</li>
-		</ul>
+
 	</div>
 </header>
 
@@ -29,7 +25,7 @@
 	header {
 		max-width: 1200px;
 		line-height: 0;
-		margin: 0 auto 9rem auto;
+		margin: 0 auto 3rem auto;
 	}
 
 	img {
@@ -70,11 +66,5 @@
 
 	.intro p {
 		margin-bottom: 3rem;
-	}
-
-	.sources {
-		font-size: 1.6rem;
-		line-height: 1.5;
-		list-style: none;
 	}
 </style>

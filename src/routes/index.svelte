@@ -1,9 +1,12 @@
 <script>
 	import Header from '$components/Header.svelte';
 	import Chart from '$components/Chart.svelte';
+	import ChartLegend from '../components/ChartLegend.svelte';
+	import Sources from '$components/Sources.svelte';
 	import Footer from '$components/Footer.svelte';
 
 	import dataset from '$data/dataset.json';
+	
 
 	const dataOil = dataset
 		.filter((d) => d.Var === 'oilreserves_bbl')
@@ -19,6 +22,8 @@
 </script>
 
 <Header />
-<Chart data={dataOil} title = {`Oil Reserves \n& Fragile State Index`}/>
-<Chart data={dataGas} title = {`Natural Gas Reserves \n& Fragile State Index`}/>
+<ChartLegend />
+<Chart data={dataOil} title={`Oil Reserves \n& Fragile State Index`} />
+<Chart data={dataGas} title={`Natural Gas Reserves \n& Fragile State Index`} />
+<Sources />
 <Footer />

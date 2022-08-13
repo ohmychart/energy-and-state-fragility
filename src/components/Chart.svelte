@@ -1,7 +1,8 @@
 <script>
 	import { group } from 'd3-array';
 	import { stack, stackOrderAscending } from 'd3-shape';
-	import { scaleLinear, scaleOrdinal, scaleBand } from 'd3-scale';
+	import { scaleLinear, scaleBand } from 'd3-scale';
+	import { scaleColor, LABELS } from '$utils/constants.js';
 
 	export let data;
 	export let title = '';
@@ -10,25 +11,9 @@
 	let width = 1200;
 	$: height = width / 2.5;
 
-	const LABELS = ['ALERT', 'WARNING', 'STABLE', 'SUSTAINABLE'];
-
-	const COLORS = [
-		'#67001f',
-		'#b2182b',
-		'#d6604d',
-		'#f4a582',
-		'#fddbc7',
-		'#ffffff',
-		'#e0e0e0',
-		'#bababa',
-		'#878787',
-		'#4d4d4d',
-		'#1a1a1a'
-	];
-
 	const margin = {
 		top: 24,
-		bottom: 24 * 2,
+		bottom: 24 * 3,
 		left: 24 * 5,
 		right: 0
 	};
@@ -38,22 +23,6 @@
 
 	$: scaleX = scaleLinear().range([0, w]).domain([0, 0.55]).nice();
 	$: scaleY = scaleBand().range([0, h]).domain(LABELS).padding(0.1);
-
-	const scaleColor = scaleOrdinal()
-		.range(COLORS.reverse())
-		.domain([
-			'Very sustainable',
-			'Sustainable',
-			'More stable',
-			'Stable',
-			'Less stable',
-			'Warning',
-			'Elevated warning',
-			'High warning',
-			'Alert',
-			'High alert',
-			'Very high alert'
-		]);
 
 	const chartData = Array.from(
 		group(data, (d) => d.label),
@@ -90,9 +59,10 @@
 		};
 	});
 
-	$: xAxisTitleMargin = width > 800 ? margin.bottom : margin.bottom * 0.8;
+	$: xAxisTitleMargin = width > 800 ? 48 : 48 * 0.8;
 	$: xAxisTitleGap = width > 800 ? 18 : 18 * 0.8;
 
+	$: isMobileView = width < 500;
 </script>
 
 <div class="chart-container" bind:clientWidth={width}>
@@ -126,13 +96,15 @@
 		</g>
 
 		<g class="axis-x" transform="translate({margin.left}, {margin.top + h + 8})">
-			<g class="axis-title" transform="translate({scaleX(0.5)}, {-xAxisTitleMargin})">
-				<text id='xAxisTitleText'>
-					{#each xAxisTitle as title}
-						<tspan x="0" dy="{xAxisTitleGap}">{title}</tspan>
-					{/each}
-				</text>
-			</g>
+			{#if !isMobileView}
+				<g class="axis-title" transform="translate({scaleX(0.5)}, {-xAxisTitleMargin})">
+					<text>
+						{#each xAxisTitle as title}
+							<tspan x="0" dy={xAxisTitleGap}>{title}</tspan>
+						{/each}
+					</text>
+				</g>
+			{/if}
 
 			<line x1="0" y1="0" x2={ticksX.slice(-1)[0].pos} y2="0" class="axis-domain" />
 			{#each ticksX as tick}
@@ -141,6 +113,12 @@
 					<text x="0" y="0" class="tick-x">{tick.label}</text>
 				</g>
 			{/each}
+
+			{#if isMobileView}
+			<g class="axis-title-mobile" transform="translate({w*0.5}, {1.4*xAxisTitleMargin})">
+				<text>{xAxisTitle.join(' ')}</text>
+			</g>
+			{/if}
 		</g>
 	</svg>
 </div>
@@ -209,6 +187,14 @@
 		fill: var(--color-secondary);
 		text-transform: uppercase;
 		text-anchor: end;
+	}
+
+	.axis-title-mobile text {
+		font-size: 12px;
+		font-weight: 400;
+		fill: var(--color-secondary);
+		text-transform: uppercase;
+		text-anchor: middle;
 	}
 
 	rect {
