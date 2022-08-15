@@ -4,9 +4,12 @@
 	import { scaleLinear, scaleBand } from 'd3-scale';
 	import { scaleColor, LABELS } from '$utils/constants.js';
 
+	import ChartAnnotation from '$components/ChartAnnotation.svelte';
+
 	export let data;
 	export let title = '';
 	export let xAxisTitle = ['Share of world', 'reserves'];
+	export let annotations = [];
 
 	let width = 1200;
 	$: height = width / 2.5;
@@ -63,6 +66,30 @@
 	$: xAxisTitleGap = width > 800 ? 18 : 18 * 0.8;
 
 	$: isMobileView = width < 500;
+
+	let annotation = {
+	};
+	let isAnnotated = false;
+
+
+	$: showAnnotation = (countryData, labelData) => {
+		const posX = scaleX(labelData[0]) + 0.5 * scaleX(labelData[1] - labelData[0]);
+		const posY = scaleY(labelData.data.label) - h * 0.1 - 8;
+		const label = countryData.key;
+
+		annotation = {
+			posX,
+			posY,
+			label,
+			size: h * 0.1,
+		};
+
+		isAnnotated = true;
+	};
+
+	const hideAnnotation = () => {
+		isAnnotated = false;
+	};
 </script>
 
 <div class="chart-container" bind:clientWidth={width}>
@@ -81,10 +108,20 @@
 							width={scaleX(labelData[1] - labelData[0])}
 							height={scaleY.bandwidth()}
 							style:fill={scaleColor(labelData.data[countryData.key].level)}
+							on:mouseenter={(e) => showAnnotation(countryData, labelData)}
+							on:mouseleave={(e) => hideAnnotation()}
+							class="bar"
 						/>
 					{/if}
 				{/each}
 			{/each}
+
+			{#if isAnnotated}
+			<g transform="translate({annotation.posX}, {annotation.posY})">
+				<ChartAnnotation {annotation} color="#80CBC4"/>
+			</g>
+				
+			{/if}
 		</g>
 
 		<g class="axis-y" transform="translate({margin.left}, {margin.top})">
@@ -115,9 +152,9 @@
 			{/each}
 
 			{#if isMobileView}
-			<g class="axis-title-mobile" transform="translate({w*0.5}, {1.4*xAxisTitleMargin})">
-				<text>{xAxisTitle.join(' ')}</text>
-			</g>
+				<g class="axis-title-mobile" transform="translate({w * 0.5}, {1.4 * xAxisTitleMargin})">
+					<text>{xAxisTitle.join(' ')}</text>
+				</g>
 			{/if}
 		</g>
 	</svg>
@@ -197,10 +234,11 @@
 		text-anchor: middle;
 	}
 
-	rect {
+	rect.bar {
 		fill: grey;
 		stroke: var(--color-primary-dark);
 		stroke-width: 1px;
+		/* cursor: pointer; */
 	}
 
 	@media (max-width: 800px) {

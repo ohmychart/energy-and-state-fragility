@@ -23,7 +23,7 @@
 
 <Header />
 <ChartLegend />
-<Chart data={dataOil} title={`Oil Reserves \n& Fragile State Index`} />
+<Chart data={dataOil} title={`Oil Reserves \n& Fragile State Index`} annotations = {['Venezuela', 'Iraq', 'Libya']}/>
 <Chart data={dataGas} title={`Natural Gas Reserves \n& Fragile State Index`} />
 <Sources />
 <Footer />
