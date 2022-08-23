@@ -3,13 +3,14 @@
 	import { stack, stackOrderAscending } from 'd3-shape';
 	import { scaleLinear, scaleBand } from 'd3-scale';
 	import { scaleColor, LABELS } from '$utils/constants.js';
+	import { fade, blur } from 'svelte/transition';
 
 	import ChartAnnotation from '$components/ChartAnnotation.svelte';
 
 	export let data;
 	export let title = '';
 	export let xAxisTitle = ['Share of world', 'reserves'];
-	export let annotations = [];
+	export let annotate = [];
 
 	let width = 1200;
 	$: height = width / 2.5;
@@ -64,24 +65,72 @@
 
 	$: xAxisTitleMargin = width > 800 ? 48 : 48 * 0.8;
 	$: xAxisTitleGap = width > 800 ? 18 : 18 * 0.8;
-
 	$: isMobileView = width < 500;
 
-	let annotation = {
-	};
+	let annotations = [];
+	let annotation = {};
 	let isAnnotated = false;
 
+	// Permanent annotations
+	stackedData.forEach((countryData) => {
+		if (annotate.includes(countryData.key)) {
+			countryData.forEach((labelData) => {
+				if (labelData[1] - labelData[0] > 0) {
+					const value = (labelData[1] - labelData[0]) * 100;
+					const label = `${countryData.key} ${value.toFixed(0)}%`;
+					const y = labelData.data.label;
+					const x1 = labelData[1];
+					const x0 = labelData[0];
+
+					annotations.push({
+						value,
+						label,
+						y,
+						x0,
+						x1
+					});
+				}
+			});
+		}
+	});
+
+	const annotationPos = (valY, valX0, valX1, scaleX, scaleY, h) => {
+		let pX = scaleX(valX0) + 0.5 * scaleX(valX1 - valX0);
+		const y = scaleY(valY);
+		let pY = y - scaleY.bandwidth() * 0.5 - 6;
+		let pos = 'top';
+
+		if (y > 0.75 * h || y < 0.25 * h) {
+			pos = 'middle';
+			pY = y + scaleY.bandwidth() * 0.5;
+			pX = scaleX(valX1) + 10;
+		} else if (y > 0.5 * h) {
+			pos = 'bottom';
+			pY = y + scaleY.bandwidth() + 10;
+		}
+
+		return { pX, pY, pos };
+	};
 
 	$: showAnnotation = (countryData, labelData) => {
-		const posX = scaleX(labelData[0]) + 0.5 * scaleX(labelData[1] - labelData[0]);
-		const posY = scaleY(labelData.data.label) - h * 0.1 - 8;
-		const label = countryData.key;
+		const value = (labelData[1] - labelData[0]) * 100;
+		const label = value >= 1 ? `${countryData.key} ${value.toFixed(0)}%` : `${countryData.key} <1%`;
+
+		const { pX, pY, pos } = annotationPos(
+			labelData.data.label,
+			labelData[0],
+			labelData[1],
+			scaleX,
+			scaleY,
+			h
+		);
 
 		annotation = {
-			posX,
-			posY,
+			pX,
+			pY,
+			pos,
 			label,
-			size: h * 0.1,
+			size: h * 0.1
 		};
 
 		isAnnotated = true;
@@ -116,11 +165,32 @@
 				{/each}
 			{/each}
 
+			{#each annotations as annotation}
+				{#if !isAnnotated}
+					{@const size = h * 0.1}
+					{@const { pX, pY, pos } = annotationPos(
+						annotation.y,
+						annotation.x0,
+						annotation.x1,
+						scaleX,
+						scaleY,
+						h
+					)}
+					<g transform="translate({pX}, {pY})" class="annotation-default" transition:fade>
+						<ChartAnnotation {size} label={annotation.label} position={pos} color="#80CBC4" />
+					</g>
+				{/if}
+			{/each}
+
 			{#if isAnnotated}
-			<g transform="translate({annotation.posX}, {annotation.posY})">
-				<ChartAnnotation {annotation} color="#80CBC4"/>
-			</g>
-				
+				<g transform="translate({annotation.pX}, {annotation.pY})" class="annotation" in:fade>
+					<ChartAnnotation
+						size={annotation.size}
+						label={annotation.label}
+						position={annotation.pos}
+						color="#80CBC4"
+					/>
+				</g>
 			{/if}
 		</g>
 
@@ -252,6 +322,12 @@
 
 		.axis-title text {
 			font-size: 12px;
+		}
+	}
+
+	@media (max-width: 500px) {
+		.annotation-default {
+			display: none;
 		}
 	}
 </style>
