@@ -1,6 +1,6 @@
 import adapter from "@sveltejs/adapter-static"; 
 
-const dev = process.env.NODE_ENV === "development";
+const prod = process.env.NODE_ENV === "production";
 
 /** @type {import('@sveltejs/kit').Config} */
 const config = {
@@ -10,7 +10,7 @@ const config = {
             assets: "docs"
 		}),
 		paths: {
-			base: dev ? "" : "/energy-and-state-fragility",
+			base: prod ? "/energy-and-state-fragility" : "",
 		},
 		prerender: {
 			default: true,

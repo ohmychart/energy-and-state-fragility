@@ -10,11 +10,12 @@
 	</p>
 	<ul class="legend">
 		{#each LEVELS as level}
-			<li><span class="level-col" style="background-color: {scaleColor(level)};" />{level}</li>
+			<li>
+				<span class="level-col" style="background-color: {scaleColor(level)};" />
+				<span>{level}</span>
+			</li>
 		{/each}
 	</ul>
-
-
 </div>
 
 <style>
@@ -29,11 +30,11 @@
 		}
 	}
 
-    .chart-legend p {
+	.chart-legend p {
 		font-size: 1.6rem;
 		line-height: 1.5;
-        margin-bottom: 2rem;
-    }
+		margin-bottom: 2rem;
+	}
 
 	.legend {
 		display: grid;
@@ -46,8 +47,14 @@
 		text-transform: uppercase;
 	}
 
+	@media (max-width: 420px) {
+		.legend {
+			row-gap: 4px;
+		}
+	}
+
 	.legend li {
-		line-height: 0;
+		line-height: 1;
 		display: flex;
 		align-items: center;
 	}

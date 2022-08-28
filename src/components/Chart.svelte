@@ -15,10 +15,10 @@
 	let width = 1200;
 	$: height = width / 2.5;
 
-	const margin = {
+	$: margin = {
 		top: 24,
 		bottom: 24 * 3,
-		left: 24 * 5,
+		left: Math.max(width * 0.15, 24*3),
 		right: 0
 	};
 
@@ -95,7 +95,7 @@
 	});
 
 	const annotationPos = (valY, valX0, valX1, scaleX, scaleY, h) => {
-		let pX = scaleX(valX0) + 0.5 * scaleX(valX1 - valX0);
+		let pX = scaleX(valX0) + 0.4 * scaleX(valX1 - valX0);
 		const y = scaleY(valY);
 		let pY = y - scaleY.bandwidth() * 0.5 - 6;
 		let pos = 'top';
@@ -328,6 +328,13 @@
 	@media (max-width: 500px) {
 		.annotation-default {
 			display: none;
+		}
+	}
+
+	@media (max-width: 450px) {
+		.tick-y {
+			font-size: 8px;
+			font-weight: 400;
 		}
 	}
 </style>
